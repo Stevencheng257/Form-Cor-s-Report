@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>聖安當女書院 - Assessment Evaluation Form 評估檢討表格</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 950px;
+            background-color: white;
+            padding: 30px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            position: relative;
+        }
+        h2, h3 {
+            color: #333;
+            border-left: 4px solid #1d6fa5;
+            padding-left: 10px;
+        }
+        h2 { border-left: none; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        /* 統一輸入框與內容的字體格式 */
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 6px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            font-weight: normal;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #000;
+        }
+        textarea {
+            resize: vertical;
+            height: 70px;
+            margin-bottom: 5px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        /* 提示字句樣式：預覽與列印時會自動隱藏 */
+        .hint {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: normal;
+            display: block;
+        }
+        
+        /* 控制列樣式 */
+        .control-panel {
+            background-color: #f0f4f8;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+        .btn-action {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-preview {
+            background-color: #4a5568;
+            color: white;
+        }
+        .btn-preview:hover { background-color: #2d3748; }
+        .btn-export {
+            background-color: #2b6cb0;
+            color: white;
+        }
+        .btn-export:hover { background-color: #2c5282; }
+
+        /* 快速快速模版按鈕 */
+        .template-container {
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .btn-template {
+            background-color: #f0f4f8;
+            color: #2c5282;
+            border: 1px solid #c8d6e5;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .btn-template:hover {
+            background-color: #3182ce;
+            color: white;
+            border-color: #3182ce;
+        }
+
+        /* 圖片上載區 */
+        .upload-zone {
+            border: 2px dashed #bbb;
+            background-color: #fafafa;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            transition: background-color 0.2s;
+        }
+        .upload-zone:hover {
+            background-color: #f0f4f8;
+            border-color: #1d6fa5;
+        }
+        .preview-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .preview-container img {
+            max-width: 100%;
+            max-height: 500px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .btn-remove-img {
+            display: none;
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* 自定義列印頁碼底框 */
+        .print-footer-space {
+            display: none;
+            height: 40px;
+        }
+        .print-footer {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #444;
+            font-family: Arial, sans-serif;
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+            background-color: white;
+        }
+
+        /* ==========================================================================
+           預覽模式 (Preview Mode) 的 CSS 樣式
+           ========================================================================== */
+        body.preview-mode {
+            background-color: #fff;
+            margin: 0;
+        }
+        body.preview-mode .container {
+            box-shadow: none;
+            border: none;
+            padding: 10px;
+        }
+        body.preview-mode h2, body.preview-mode h3 {
+            border-left: none;
+            padding-left: 0;
+        }
+        /* 隱藏所有提示與操作面板 */
+        body.preview-mode .template-container,
+        body.preview-mode .hint,
+        body.preview-mode .upload-zone,
+        body.preview-mode .btn-remove-img {
+            display: none !important;
+        }
+        /* 徹底將輸入框轉為乾淨的純文字樣式 */
+        body.preview-mode select,
+        body.preview-mode input[type="text"],
+        body.preview-mode textarea {
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            outline: none !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            font-size: 14px !important;
+            font-family: Arial, sans-serif !important;
+            font-weight: normal !important;
+            color: #000 !important;
+            resize: none !important;
+        }
+        body.preview-mode textarea {
+            height: auto !important;
+            overflow: hidden !important;
+        }
+
+        /* ==========================================================================
+           列印時 (Print / Save to PDF) 的 CSS 排版控制
+           ========================================================================== */
+        @media print {
+            @page {
+                size: A4;
+                margin: 20mm 15mm 20mm 15mm;
+            }
+            /* 列印時隱藏提示、操作按鈕與上載區 */
+            .control-panel, .template-container, .hint, .upload-zone, .btn-remove-img {
+                display: none !important;
+            }
+            body {
+                background-color: #fff;
+                margin: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            h2, h3 {
+                border-left: none;
+                padding-left: 0;
+            }
+            h3, h4 {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+            table, .preview-container {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .section-block {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                margin-top: 15px;
+            }
+            /* 將輸入控制項轉為與一般內文一致的字體格式 */
+            select, input[type="text"], textarea {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                outline: none !important;
+                appearance: none !important;
+                font-size: 14px !important;
+                font-family: Arial, sans-serif !important;
+                font-weight: normal !important;
+                color: #000 !important;
+                resize: none !important;
+            }
+            .print-footer-space {
+                display: block !important;
+            }
+            .print-footer {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="control-panel">
+    <div class="btn-group">
+        <button class="btn-action btn-preview" id="btnTogglePreview" onclick="togglePreviewMode()">進入文件預覽模式</button>
+        <button class="btn-action btn-export" onclick="exportToPDF()">一鍵匯出為 PDF 檔 / 列印</button>
+    </div>
+    <div style="font-size: 12px; color: #e53e3e; font-weight: bold; margin-top: 5px;">
+        💡 溫馨提示：點擊匯出後，請務必在瀏覽器列印設定中【取消勾選：頁首與頁尾】，即可完美隱藏網址並保留純淨頁碼！
+    </div>
+</div>
+
+<div class="container">
+    <div style="text-align: center;">
+        <h2>聖安當女書院</h2>
+        <h3>Assessment Evaluation Form 評估檢討表格</h3>
+    </div>
+
+    <h3>A. Basic Information 基本資料</h3>
+    <table>
+        <tr>
+            <th width="25%">Academic Year 學年</th>
+            <td>
+                <input type="text" id="academicYear" value="2025 - 2026" placeholder="例如：2025 - 2026">
+            </td>
+        </tr>
+        <tr>
+            <th>Subject 科目</th>
+            <td>
+                <strong style="font-size: 14px; font-weight: normal; font-family: Arial, sans-serif;">Mathematics</strong>
+            </td>
+        </tr>
+        <tr>
+            <th>Form 年級</th>
+            <td>
+                <select id="formLevel">
+                    <option value="Form 1">Form 1</option>
+                    <option value="Form 2">Form 2</option>
+                    <option value="Form 3" selected>Form 3</option>
+                    <option value="Form 4">Form 4</option>
+                    <option value="Form 5">Form 5</option>
+                    <option value="Form 6">Form 6</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Subject Teacher 科任教師</th>
+            <td>
+                <input type="text" id="subjectTeachers" value="吳家瑩老師、鄭家俊老師、黃愉恒老師、李國輝老師" placeholder="請輸入老師名字">
+                <span class="hint">※ 請用頓號（、）或逗號（,）分隔不同老師的名字，輸入後擬卷教師選單會自動更新。</span>
+            </td>
+        </tr>
+        <tr>
+            <th>Assessment 評估</th>
+            <td>
+                <div class="checkbox-group">
+                    <label><input type="radio" name="assessment" value="1"> 第一學期考試</label>
+                    <label><input type="radio" name="assessment" value="2" checked> 第二學期考試</label>
+                    <label><input type="radio" name="assessment" value="3"> 第三學期考試</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>Paper 卷別</th>
+            <td>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="paperCheck" value="卷一" checked> 卷一</label>
+                    <label><input type="checkbox" name="paperCheck" value="卷二"> 卷二</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>Setter 擬卷教師</th>
+            <td>
+                <select id="setter">
+                    <option value="">-- 請先在上方輸入科任教師 --</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Blue-print 擬卷藍圖</th>
+            <td>
+                <div class="checkbox-group">
+                    <label><input type="radio" name="blueprint" value="yes"> 有使用</label>
+                    <label><input type="radio" name="blueprint" value="no" checked> 沒有使用</label>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <h3>B. Comments on the assessment paper as a whole 考卷情況（整體）</h3>
+    <table>
+        <tr>
+            <th width="35%">項目</th>
+            <th>太多/太長/太難</th>
+            <th>略多/略長/略難</th>
+            <th>合適</th>
+            <th>略少/略短/略易</th>
+            <th>太少/太短/太易</th>
+        </tr>
+        <tr>
+            <td>1. Coverage of assessment 考試範圍</td>
+            <td><input type="radio" name="coverage" value="too_much"></td>
+            <td><input type="radio" name="coverage" value="slightly_too_much"></td>
+            <td><input type="radio" name="coverage" value="appropriate" checked></td>
+            <td><input type="radio" name="coverage" value="slightly_little"></td>
+            <td><input type="radio" name="coverage" value="too_little"></td>
+        </tr>
+        <tr>
+            <td>2. Duration of assessment 考試時間</td>
+            <td><input type="radio" name="duration" value="too_long"></td>
+            <td><input type="radio" name="duration" value="slightly_long"></td>
+            <td><input type="radio" name="duration" value="appropriate" checked></td>
+            <td><input type="radio" name="duration" value="slightly_short"></td>
+            <td><input type="radio" name="duration" value="too_short"></td>
+        </tr>
+        <tr>
+            <td>3. Level of difficulty 考試難度</td>
+            <td><input type="radio" name="difficulty" value="too_difficult"></td>
+            <td><input type="radio" name="difficulty" value="slightly_difficult"></td>
+            <td><input type="radio" name="difficulty" value="appropriate" checked></td>
+            <td><input type="radio" name="difficulty" value="slightly_easy"></td>
+            <td><input type="radio" name="difficulty" value="too_easy"></td>
+        </tr>
+    </table>
+
+    <h3>C. Statistical Analysis 統計分析</h3>
+    <div class="upload-zone" id="dropZone" onclick="document.getElementById('imageUpload').click()">
+        <p style="margin: 5px 0; color: #555; font-weight: bold;">點擊此處上載統計圖表圖片，或直接在此區域按 Ctrl + V 貼上截圖</p>
+        <p style="margin: 5px 0; color: #888; font-size: 12px;">支援 PNG, JPG, GIF 格式</p>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+    </div>
+    <div class="preview-container">
+        <img id="imagePreview" alt="統計分析圖表預覽">
+        <br>
+        <button type="button" class="btn-remove-img" id="btnRemoveImg" onclick="removeUploadedImage()">刪除圖片</button>
+    </div>
+
+    <div class="section-block">
+        <h3>D. Student Performance 學生整體表現</h3>
+        
+        <h4>1. Topic(s) / Question Type(s) / Concept(s) / Skill(s) with satisfactory performance (表現滿意的課題/題型/概念/技能)</h4>
+        <span class="hint" style="margin-bottom: 5px;">※ 提示：請於下方欄位內直接輸入各班表現令人滿意的具體教學成果</span>
+        <table>
+            <tr>
+                <th width="15%">班別 Class</th>
+                <th>滿意表現之具體內容</th>
+            </tr>
+            <tr>
+                <td><strong>3ABC1</strong></td>
+                <td><textarea placeholder="請填寫該班表現滿意的課題或概念..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3ABC2</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3ABC3</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3ABC4</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3D</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+        </table>
+
+        <h4>2. Topic(s) / Question Type(s) / Concept(s) / Skill(s) that need(s) improvement (有待改善的課題/題型/概念/技能)</h4>
+        <span class="hint" style="margin-bottom: 5px;">※ 提示：請於下方欄位內直接輸入各班發現的有待改善項目或常見錯誤</span>
+        <table>
+            <tr>
+                <th width="15%">班別 Class</th>
+                <th>有待改善之具體內容</th>
+            </tr>
+            <tr>
+                <td><strong>3ABC1</strong></td>
+                <td><textarea placeholder="請填寫該班有待改善的課題或常犯錯誤..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3ABC2</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3ABC3</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3ABC4</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+            <tr>
+                <td><strong>3D</strong></td>
+                <td><textarea placeholder="請填寫..."></textarea></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section-block">
+        <h3>E. Suggestions for improvement 改善建議</h3>
+        <span class="hint" style="margin-bottom: 10px;">(e.g. curriculum planning, pedagogy, assessment and etc.) (如課程適調、教學策略及評估設計等)</span>
+        <table>
+            <tr>
+                <th width="15%">向度</th>
+                <th width="20%">策略</th>
+                <th>具體安排</th>
+            </tr>
+            <tr>
+                <td>課程規劃 / 調適</td>
+                <td>課程規劃</td>
+                <td>
+                    <textarea id="sug_curriculum" placeholder="請輸入具體安排..."></textarea>
+                    <div class="template-container">
+                        <button class="btn-template" onclick="fillSug('sug_curriculum', '因應學生學習進度，適當調配基礎課題與進階課題的課時比例。')">調配課時比例</button>
+                        <button class="btn-template" onclick="fillSug('sug_curriculum', '針對學生的數學能力差異，進一步優化各單元基礎工作紙及增潤材料。')">優化分層工作紙</button>
+                        <button class="btn-template" onclick="fillSug('sug_curriculum', '於學期初微調課程進度表，預留更多課時進行核心代數課題的鞏固教學。')">預留核心課題課時</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="2">教學策略</td>
+                <td>課堂講授</td>
+                <td>
+                    <textarea id="sug_pedagogy1" placeholder="請輸入具體安排..."></textarea>
+                    <div class="template-container">
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy1', '加強幾何與代數課題的圖形化教學，利用動態幾何幾何教學軟件（如GeoGebra）輔助抽象概念之理解。')">動態軟件輔助</button>
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy1', '增設課堂步驟拆解示範，引導學生掌握邏輯推理及多步驟長題目的解題規範。')">解題步驟拆解</button>
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy1', '引入小組協作學習模式，讓學生透過討論澄清數學概念，提昇課堂參與度。')">小組協作學習</button>
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy1', '於引導式教學中加強數學提問技巧，引發學生深層思考，建構完整的邏輯鏈。')">強化提問技巧</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>溫習策略</td>
+                <td>
+                    <textarea id="sug_pedagogy2" placeholder="請輸入具體安排..."></textarea>
+                    <div class="template-container">
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy2', '於評估前編製「核心概念與常犯錯誤錯題集」，引導學生進行具針對性的自我複習。')">核心錯題集</button>
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy2', '建立日常溫習與反思常規，每週安排基礎運算練習以鞏固學生的運算根基。')">每週基礎運算</button>
+                        <button class="btn-template" onclick="fillSug('sug_pedagogy2', '指導學生運用思維導圖（Mind Map）梳理各章節之間的數學公式與邏輯關係。')">思維導圖梳理</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="2">評估設計</td>
+                <td>課業設計/安排</td>
+                <td>
+                    <textarea id="sug_assessment1" placeholder="請輸入具體安排...">增加分層作業，扶助不同程度同學學習需要。</textarea>
+                    <div class="template-container">
+                        <button class="btn-template" onclick="fillSug('sug_assessment1', '增加分層作業，扶助不同程度同學學習需要。')">預設：分層作業</button>
+                        <button class="btn-template" onclick="fillSug('sug_assessment1', '於日常作業中加入挑戰題（Challenge Questions）與延伸思考題，以激發動機並培育拔尖學生之潛能。')">增設挑戰題</button>
+                        <button class="btn-template" onclick="fillSug('sug_assessment1', '優化課堂課業的題目排序，採取由淺入深的漸進式編排，以照顧學習多樣性。')">題目由淺入深</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>小測設計/安排</td>
+                <td>
+                    <textarea id="sug_assessment2" placeholder="請輸入具體安排...">增加班本小測以針對不同程度及能力班別。</textarea>
+                    <div class="template-container">
+                        <button class="btn-template" onclick="fillSug('sug_assessment2', '增加班本小測以針對不同程度及能力班別。')">預設：班本小測</button>
+                        <button class="btn-template" onclick="fillSug('sug_assessment2', '推行「跟進小測」機制，容讓未達標之同學在輔導後進行重測，以重建學習信心。')">跟進重測機制</button>
+                        <button class="btn-template" onclick="fillSug('sug_assessment2', '提高小測的測查頻次（如每章一測），採取「小步子」評估策略以即時反饋教學成效。')">小步子評估策略</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>其他</td>
+                <td>如：補課安排、拔尖補底</td>
+                <td>
+                    <textarea id="sug_others" placeholder="請輸入具體安排..."></textarea>
+                    <div class="template-container">
+                        <button class="btn-template" onclick="fillSug('sug_others', '試後為學習進度顯著落後的學生安排課後輔導支援班，重新鞏固本次評估中失分率較高的核心課題。')">試後輔導支援</button>
+                        <button class="btn-template" onclick="fillSug('sug_others', '定期開設數學增潤及拔尖小組，專注於特訓高階思維及靈活多變的應試題型。')">開設增潤拔尖組</button>
+                        <button class="btn-template" onclick="fillSug('sug_others', '加強與家長之溝通，定期反饋學生之評估表現，以凝聚家校合作輔導之效能。')">家校協作反饋</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="print-footer-space"></div>
+</div>
+
+<div class="print-footer">
+    <table style="width:100%; border:none; margin:0; padding:0;">
+        <tr style="border:none;">
+            <td style="border:none; text-align:left; font-size:11px; color:#666; width:50%;">聖安當女書院 - 數學組</td>
+            <td style="border:none; text-align:right; font-size:11px; color:#666; width:50%;">評估檢討表格</td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    const teachersInput = document.getElementById('subjectTeachers');
+    const setterSelect = document.getElementById('setter');
+    
+    const fileInput = document.getElementById('imageUpload');
+    const dropZone = document.getElementById('dropZone');
+    const imgPreview = document.getElementById('imagePreview');
+    const btnRemoveImg = document.getElementById('btnRemoveImg');
+    const btnTogglePreview = document.getElementById('btnTogglePreview');
+
+    // 1. 動態更新擬卷老師選單
+    function updateSetterDropdown() {
+        const rawText = teachersInput.value;
+        const teachers = rawText.split(/[、，,;\s]+/).map(name => name.trim()).filter(name => name !== "");
+        const currentSelected = setterSelect.value;
+
+        setterSelect.innerHTML = '<option value="">-- 請選擇擬卷教師 --</option>';
+
+        teachers.forEach(teacher => {
+            const option = document.createElement('option');
+            option.value = teacher;
+            option.textContent = teacher;
+            if (teacher === currentSelected) {
+                option.selected = true;
+            }
+            setterSelect.appendChild(option);
+        });
+    }
+
+    // 2. 快速填入改善建議範本
+    function fillSug(elementId, text) {
+        const textarea = document.getElementById(elementId);
+        if (textarea.value.trim() === "") {
+            textarea.value = text;
+        } else {
+            if (!textarea.value.includes(text)) {
+                textarea.value = textarea.value + "\n" + text;
+            }
+        }
+    }
+
+    // 3. 處理圖片顯示與預覽
+    function displayImage(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = 'inline-block';
+                btnRemoveImg.style.display = 'inline-block';
+                dropZone.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeUploadedImage() {
+        fileInput.value = '';
+        imgPreview.src = '';
+        imgPreview.style.display = 'none';
+        btnRemoveImg.style.display = 'none';
+        dropZone.style.display = 'block';
+    }
+
+    // 4. 切換預覽模式 (Preview Mode)
+    function togglePreviewMode() {
+        document.body.classList.toggle('preview-mode');
+        const textareas = document.querySelectorAll('textarea');
+        
+        if (document.body.classList.contains('preview-mode')) {
+            btnTogglePreview.textContent = "返回填寫模式";
+            btnTogglePreview.style.backgroundColor = "#e2e8f0";
+            btnTogglePreview.style.color = "#2d3748";
+            
+            textareas.forEach(ta => {
+                ta.style.height = 'auto';
+                ta.style.height = ta.scrollHeight + 'px';
+            });
+        } else {
+            btnTogglePreview.textContent = "進入文件預覽模式";
+            btnTogglePreview.style.backgroundColor = "#4a5568";
+            btnTogglePreview.style.color = "white";
+            
+            textareas.forEach(ta => {
+                ta.style.height = '70px';
+            });
+        }
+    }
+
+    // 5. 一鍵導出 PDF / 列印
+    function exportToPDF() {
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(ta => {
+            ta.style.height = 'auto';
+            ta.style.height = ta.scrollHeight + 'px';
+        });
+        
+        window.print();
+    }
+
+    // 事件監聽
+    fileInput.addEventListener('change', e => displayImage(e.target.files[0]));
+    
+    document.addEventListener('paste', function(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                displayImage(items[i].getAsFile());
+                break;
+            }
+        }
+    });
+
+    teachersInput.addEventListener('input', updateSetterDropdown);
+    teachersInput.addEventListener('change', updateSetterDropdown);
+
+    window.addEventListener('DOMContentLoaded', () => {
+        updateSetterDropdown();
+    });
+</script>
+
+</body>
+</html>
